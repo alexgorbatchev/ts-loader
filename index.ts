@@ -275,14 +275,10 @@ function ensureTypeScriptInstance(loaderOptions: LoaderOptions, loader: any): { 
     instance.compilerOptions = objectAssign<typescript.CompilerOptions>(compilerOptions, configParseResult.options);
     filesToLoad = configParseResult.fileNames;
 
-    var libFileName = 'lib.d.ts';
-
-    // Special handling for ES6 targets
-    if (compilerOptions.target == 2 /* ES6 */) {
+    // special handling for TS 1.6 and target: es6
+    if (compilerCompatible && semver.lt(compiler.version, '1.7.3-0') && compilerOptions.target == 2 /* ES6 */) {
         compilerOptions.module = 0 /* None */;
-        libFileName = 'lib.es6.d.ts';
     }
-    libFileName = path.join(path.dirname(require.resolve(loaderOptions.compiler)), libFileName);
 
     if (loaderOptions.transpileOnly) {
         // quick return for transpiling
@@ -295,10 +291,6 @@ function ensureTypeScriptInstance(loaderOptions: LoaderOptions, loader: any): { 
             formatErrors(diagnostics, instance, {file: configFilePath || 'tsconfig.json'}));
 
         return { instance: instances[loaderOptions.instance] = { compiler, compilerOptions, loaderOptions, files }};
-    }
-
-    if (!compilerOptions.noLib) {
-        filesToLoad.push(libFileName);
     }
 
     // Load initial files (core lib files, any files specified in tsconfig.json)
@@ -356,7 +348,7 @@ function ensureTypeScriptInstance(loaderOptions: LoaderOptions, loader: any): { 
         },
         getCurrentDirectory: () => process.cwd(),
         getCompilationSettings: () => compilerOptions,
-        getDefaultLibFileName: options => libFileName,
+        getDefaultLibFileName: options => compiler.getDefaultLibFilePath(options),
         getNewLine: () => newLine,
         log: log,
         resolveModuleNames: (moduleNames: string[], containingFile: string) => {

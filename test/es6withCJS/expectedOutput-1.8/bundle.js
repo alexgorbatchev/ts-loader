@@ -42,20 +42,12 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var submodule_1 = __webpack_require__(1);
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports["default"] = submodule_1["default"];
-
-/***/ },
-/* 1 */
 /***/ function(module, exports) {
 
 	"use strict";
 	Object.defineProperty(exports, "__esModule", { value: true });
-	exports["default"] = "Hello from submodule";
+	exports.default = 'a';
+
 
 /***/ }
 /******/ ]);
